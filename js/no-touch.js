@@ -1,4 +1,4 @@
-﻿$.fn.noTouch = function() {
+﻿$.fn.noTouch = function () {
 
     function init($this) {
 
@@ -14,7 +14,7 @@
         })();
 
         var mouseDownStart;
-        var $handle;
+        var $draggingHandle;
         var originalPosition = null;
 
         var touches = {};
@@ -29,12 +29,40 @@
             return res;
         }
 
+        function createTouch($handle) {
+            var key = $handle.attr('id');
+            var pos = $handle.position();
+            return {
+                identifier: key,
+                clientX: pos.left,
+                clientY: pos.top
+            };
+        }
+
         function triggerTouch($handle, touchEventName) {
             var touchEvent = $.Event(touchEventName);
             touchEvent.originalEvent = {
                 touches: getTouchList()
             };
             $handle.trigger(touchEvent);
+        }
+
+        function untouchHandle($handle) {
+            if ($handle.hasClass('touched')) {
+                var key = $handle.attr('id');
+                $handle.removeClass('touched');
+                delete touches[key];
+                triggerTouch($handle, 'touchend');
+            }
+        }
+
+        function touchHandle($handle) {
+            if (!$handle.hasClass('touched')) {
+                var key = $handle.attr('id');
+                $handle.addClass('touched');
+                touches[key] = createTouch($handle);
+                triggerTouch($handle, 'mousestart');
+            }
         }
 
         function getMousePosition(ev) {
@@ -68,64 +96,70 @@
 
             var pos = calcPosition(vector);
 
-            $handle.css({
+            $draggingHandle.css({
                 top: pos.y,
                 left: pos.x
             });
         }
 
-        function createTouch($handle) {
-            var key = $handle.attr('id');
-            var pos = $handle.position();
-            return {
-                identifier: key,
-                clientX: pos.left,
-                clientY: pos.top
-            };
-        }
-
         var mouseDown = false;
-        $this.on('mousedown', '.touch-handle', function (ev) {
-            var $target = $(ev.target);
+
+        function onMouseDown(ev, $handle) {
             mouseDownStart = getMousePosition(ev);
-            $handle = $target;
             originalPosition = $handle.position();
             mouseDown = true;
+            $draggingHandle = $handle;
+        }
+
+        $this.on('mousedown', '.touch-handle', function (ev) {
+            onMouseDown(ev, $(ev.target));
             return false;
-        }).bind('mousemove', function (mouseEvent) {
+        }).on('mousedown', function (ev) {
+            $this.find('.touch-handle.touched').each(function() {
+                untouchHandle($(this));
+            });
+            var $handle = $this.find('.touch-handle').eq(0);
+
+            var containerPos = $this.offset();
+            $handle.css({
+                top: ev.clientY - containerPos.top,
+                left: ev.clientX - containerPos.left
+            });
+            touchHandle($handle);
+            onMouseDown(ev, $handle);
+            return false;
+        });
+
+        $(document).bind('mousemove', function (mouseEvent) {
             if (mouseDown) {
                 dragMove(mouseEvent);
 
-                var key = $handle.attr('id');
+                var key = $draggingHandle.attr('id');
                 if (touches[key]) {
-                    touches[key] = createTouch($handle);
+                    touches[key] = createTouch($draggingHandle);
 
-                    triggerTouch($handle, 'touchmove');
+                    triggerTouch($draggingHandle, 'touchmove');
                 }
                 return false;
             }
+            return true;
         }).bind('mouseup', function () {
             if (mouseDown) {
                 mouseDown = false;
                 return false;
             }
+            return true;
         });
 
         $this.on('click', '.touch-handle .touch', function (mouseEvent) {
             var $lnk = $(mouseEvent.target);
             var $handle = $lnk.closest('.touch-handle');
-            var key = $handle.attr('id');
 
             if ($handle.hasClass('touched')) {
-                $handle.removeClass('touched');
-                delete touches[key];
-                triggerTouch($handle, 'touchend');
+                untouchHandle($handle);
             } else {
-                $handle.addClass('touched');
-                touches[key] = createTouch($handle);
-                triggerTouch($handle, 'mousestart');
+                touchHandle($handle);
             }
-
         });
 
         return {

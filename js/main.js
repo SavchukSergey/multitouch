@@ -2,16 +2,24 @@
 
     $('.canvas').noTouch();
 
+    var originalTransformation = new Matrix2D();
 
     var multitouch;
     var $img = $('.canvas img');
     var $editor = null;
 
-    function refresh() {
+    function getResultMatrix() {
+        var m = originalTransformation;
         if (multitouch) {
-            var matrix = multitouch.getResultMatrix();
-            $img.css('transform', matrix.getTransformExpression());
+            var dragMatrix = multitouch.getResultMatrix();
+            m = m.multiply(dragMatrix);
         }
+        return m;
+    }
+
+    function refresh() {
+        var m = getResultMatrix();
+        $img.css('transform', m.getTransformExpression());
     }
 
     function processTouches(touches) {
@@ -25,8 +33,9 @@
         $editor.toggleClass('dragging', !!touches.length);
 
         if (!touches.length) {
-            //todo: transformation ended. Now you can use resultMatrix
+            originalTransformation = getResultMatrix();
             multitouch = null;
+            //todo: transformation ended. Now you can use resultMatrix
         }
     }
 
@@ -36,36 +45,6 @@
         var touches = ev.originalEvent.touches;
         processTouches(touches || []);
         return false;
-    });
-
-    function getMouseTouches(ev) {
-        return [{
-            identifier: 'mouse',
-            clientX: ev.clientX,
-            clientY: ev.clientY
-        }];
-    }
-
-    var mouseDown = false;
-    $('body').on('mousedown', '.canvas', function (mouseEvent) {
-        if (mouseEvent.which !== 1) return true;
-        $editor = $(mouseEvent.target).closest('.canvas');
-        processTouches(getMouseTouches(mouseEvent));
-        mouseDown = true;
-        return false;
-    }).bind('mousemove', function (ev) {
-        if (mouseDown) {
-            processTouches(getMouseTouches(ev));
-            return false;
-        }
-        return true;
-    }).bind('mouseup mouseleave', function () {
-        if (mouseDown) {
-            processTouches([]);
-            mouseDown = false;
-            return false;
-        }
-        return true;
     });
 
 });
