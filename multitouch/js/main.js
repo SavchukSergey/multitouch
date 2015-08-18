@@ -34,6 +34,7 @@
     function refresh() {
         var m = getResultMatrix();
         $img.css('transform', m.getTransformExpression());
+        $('#transform-info').text(m.getTransformExpression());
     }
 
     function processTouches(touches) {
@@ -58,7 +59,8 @@
 
         var touches = ev.originalEvent.touches;
         processTouches(touches || []);
-        return false;
+
+        ev.preventDefault();
     }
 
     $(document).on('touchstart touchmove touchend touchcancel', '.canvas', process);
