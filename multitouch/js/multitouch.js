@@ -14,8 +14,8 @@
 
     function getTouchPosition(touch) {
         return {
-            x: touch.clientX,
-            y: touch.clientY,
+            x: touch.pageX,
+            y: touch.pageY,
             identifier: touch.identifier
         }
     }
@@ -99,8 +99,8 @@
             var key = touch.identifier;
             res[key] = {
                 identifier: key,
-                x: touch.clientX,
-                y: touch.clientY
+                x: touch.pageX,
+                y: touch.pageY
             };
         }
         return res;

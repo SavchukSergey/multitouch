@@ -34,8 +34,8 @@
             var pos = $handle.position();
             return {
                 identifier: key,
-                clientX: pos.left,
-                clientY: pos.top
+                pageX: pos.left,
+                pageY: pos.top
             };
         }
 
@@ -70,13 +70,13 @@
             if (ev.type.indexOf('touch') >= 0) {
                 var touch = ev.originalEvent.touches[0];
                 return {
-                    x: touch.clientX,
-                    y: touch.clientY
+                    x: touch.pageX,
+                    y: touch.pageY
                 };
             }
             return {
-                x: ev.clientX,
-                y: ev.clientY
+                x: ev.pageX,
+                y: ev.pageY
             };
         }
 
@@ -146,8 +146,8 @@
 
             var containerPos = $this.offset();
             $handle.css({
-                top: ev.clientY - containerPos.top,
-                left: ev.clientX - containerPos.left
+                top: ev.pageY - containerPos.top,
+                left: ev.pageX - containerPos.left
             });
             touchHandle($handle);
             onMouseDown(ev, $handle);
