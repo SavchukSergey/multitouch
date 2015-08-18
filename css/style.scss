@@ -1,0 +1,71 @@
+﻿@mixin transform-origin($top, $left) {
+    transform-origin: $top $left;
+    -webkit-transform-origin: $top $left;
+}
+
+@mixin user-select ($value) {
+    user-select: $value;
+    -webkit-user-select: $value;
+}
+
+.canvas {
+    position: relative;
+    border: solid 1px red;
+    width: 500px;
+    height: 500px;
+    @include user-select(none);
+    overflow: hidden;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    @include transform-origin(0%, 0);
+}
+
+.canvas {
+    #handle-0 {
+        top: 50%;
+        left: 50%;
+    }
+
+    #handle-1 {
+        top: 25%;
+        left: 50%;
+    }
+
+    #handle-2 {
+        top: 75%;
+        left: 25%;
+    }
+
+    .touch-handle {
+        position: absolute;
+        width: 2em;
+        height: 2em;
+        border: solid 1px green;
+        background-color: yellow;
+        border-radius: 50%;
+        margin-top: -1em;
+        margin-left: -1em;
+        color: black;
+        text-align: center;
+        line-height: 2em;
+
+        .touch {
+            border: solid 1px black;
+            background-color: grey;
+            display: inline-block;
+            padding: 0.5em;
+            color: black;
+        }
+
+        &.touched {
+            background-color: red;
+
+            .touch {
+                background-color: green;
+            }
+        }
+    }
+}

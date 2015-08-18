@@ -125,7 +125,14 @@
     }
 
     function getTransformExpression() {
-        return 'matrix({0}, {1}, {2}, {3}, {4}, {5})'.format(roundFloat(m[0]), roundFloat(m[1]), roundFloat(m[3]), roundFloat(m[4]), roundFloat(m[6]), roundFloat(m[7]));
+        var res = 'matrix({0}, {1}, {2}, {3}, {4}, {5})'
+        .replace('{0}', roundFloat(m[0]))
+        .replace('{1}', roundFloat(m[1]))
+        .replace('{2}', roundFloat(m[3]))
+        .replace('{3}', roundFloat(m[4]))
+        .replace('{4}', roundFloat(m[6]))
+        .replace('{5}', roundFloat(m[7]));
+        return res;
     }
 
     self.getElements = getElements;
