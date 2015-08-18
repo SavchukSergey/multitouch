@@ -3,6 +3,10 @@
     var $canvas = $('.canvas');
     var $img = $('.canvas img');
     var $chkTouchEmulation = $('#touch-emulation');
+    var $chkSkew = $('#options-skew');
+    var $chkRotate = $('#options-rotate');
+    var $chkZoom = $('#options-zoom');
+
 
     $canvas.noTouch();
 
@@ -19,6 +23,14 @@
         return m;
     }
 
+    function createOptions() {
+        return {
+            skew: $chkSkew.prop('checked'),
+            rotate: $chkRotate.prop('checked'),
+            scale: $chkZoom.prop('checked')
+        };
+    }
+
     function refresh() {
         var m = getResultMatrix();
         $img.css('transform', m.getTransformExpression());
@@ -27,7 +39,7 @@
     function processTouches(touches) {
         if (!$canvas) return;
         if (!multitouch) {
-            multitouch = new MultiTouch();
+            multitouch = new MultiTouch(createOptions());
         }
         multitouch.acceptTouches(touches);
         refresh();
@@ -41,8 +53,6 @@
         }
     }
 
-    var dragging = false;
-
     function process(ev) {
         $canvas = $(ev.target).closest('.canvas');
 
@@ -51,37 +61,13 @@
         return false;
     }
 
-    function processStart(ev) {
-        console.log('processstart');
-        return process(ev);
-        dragging = true;
-        return process(ev);
-    }
-
-    function processEnd(ev) {
-        console.log('processend');
-        return process(ev);
-        if (dragging) {
-            dragging = false;
-            return process(ev);
-        }
-        return true;
-    }
-
-    function processMove(ev) {
-        console.log('processmove ' + dragging);
-        return process(ev);
-        if (dragging) {
-            return process(ev);
-        }
-        return true;
-    }
-
-    $(document).on('touchstart', '.canvas', processStart);
-    $(document).on('touchmove', '.canvas', processMove);
-    $(document).on('touchend touchcancel', '.canvas', processEnd);
+    $(document).on('touchstart touchmove touchend touchcancel', '.canvas', process);
 
     $('#touch-emulation').change(function () {
         $canvas.toggleClass('touch-emulation', $chkTouchEmulation);
+    });
+
+    $('input[type=checkbox]').change(function () {
+        $canvas.noTouch().reset();
     });
 });

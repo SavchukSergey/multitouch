@@ -3,7 +3,6 @@
     var self = this;
 
     options = $.extend({
-        translate: true,
         rotate: true,
         scale: true,
         skew: true
@@ -19,6 +18,12 @@
             y: touch.clientY,
             identifier: touch.identifier
         }
+    }
+
+    function normalizeVector(v) {
+        var len = Math.sqrt(v.x * v.x + v.y * v.y);
+        if (len < 0) len = 1;
+        return { x: v.x / len, y: v.y / len, identifier: v.identifier };
     }
 
     function getCoordinateSystem(touches) {
@@ -56,6 +61,10 @@
             var c = items[2];
             cs.v = { x: c.x - cs.position.x, y: c.y - cs.position.y, identifier: c.identifier };
             hash += items[2].identifier.toString() + ' ';
+        }
+        if (!options.scale) {
+            cs.u = normalizeVector(cs.u);
+            cs.v = normalizeVector(cs.v);
         }
         cs.hash = hash;
         cs.length = Math.min(3, items.length);

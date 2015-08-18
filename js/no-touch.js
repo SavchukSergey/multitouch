@@ -190,8 +190,14 @@
             return false;
         });
 
-        return {
+        function reset() {
+            $this.find('.touch-handle.touched').each(function () {
+                untouchHandle($(this));
+            });
+        }
 
+        return {
+            reset: reset
         };
     }
 
