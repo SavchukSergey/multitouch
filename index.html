@@ -62,6 +62,44 @@
             <script src="multitouch/js/main.js"></script>
         </div>
 
+        <div id="event-info">
+            <h3></h3>
+            <table>
+                <colgroup>
+                    <col style="width: 10em;"/>
+                    <col style="width: 10em;"/>
+                </colgroup>
+                <tr>
+                    <td>
+                        <h4>Touch 1</h4>
+                        identifier: <span id="event-1-identifier"></span>
+                        <br/>
+                        clientX: <span id="event-1-clientX"></span>
+                        <br/>
+                        clientY: <span id="event-1-clientY"></span>
+                        <br/>
+                        pageX: <span id="event-1-pageX"></span>
+                        <br/>
+                        pageY: <span id="event-1-pageY"></span>
+                        <br/>
+
+                    </td>
+                    <td>
+                        <h4>Touch 2</h4>
+                        identifier: <span id="event-2-identifier"></span>
+                        <br/>
+                        clientX: <span id="event-2-clientX"></span>
+                        <br/>
+                        clientY: <span id="event-2-clientY"></span>
+                        <br/>
+                        pageX: <span id="event-2-pageX"></span>
+                        <br/>
+                        pageY: <span id="event-2-pageY"></span>
+                        <br/>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
         <p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here <a href="https://guides.github.com/features/mastering-markdown/">using GitHub Flavored Markdown</a>, select a template crafted by a designer, and publish. After your page is generated, you can check out the new <code>gh-pages</code> branch locally. If you’re using GitHub Desktop, simply sync your repository and you’ll see the new branch.</p>
 
@@ -97,6 +135,27 @@
 
     </section>
 
-
+<script type="text/javascript">
+    $(document).ready(function() {
+        var $container = $('#event-info');
+        $(document).on('touchstart touchmove touchend touchcancel', function(ev) {
+            $container.find('h3').text(ev.type);
+            for (var i = 1; i <= 2; i++) {
+                var touch = ev.originalEvent.touches[i-1] || {
+                    identifier: ' ',
+                    clientX: ' ',
+                    clientY: ' ',
+                    pageX: ' ',
+                    pageY: ' '
+                };
+                $container.find('#event-' + i + '-identifier').text(touch.identifier);
+                $container.find('#event-' + i + '-clientX').text(touch.clientX);
+                $container.find('#event-' + i + '-clientY').text(touch.clientY);
+                $container.find('#event-' + i + '-pageX').text(touch.pageX);
+                $container.find('#event-' + i + '-pageY').text(touch.pageY);
+            }
+        });
+    });
+</script>
 </body>
 </html>
