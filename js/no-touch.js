@@ -66,6 +66,13 @@
         }
 
         function getMousePosition(ev) {
+            if (ev.type.indexOf('touch') >= 0) {
+                var touch = ev.originalEvent.touches[0];
+                return {
+                    x: touch.clientX,
+                    y: touch.clientY
+                };
+            }
             return {
                 x: ev.clientX,
                 y: ev.clientY
@@ -111,7 +118,7 @@
             $draggingHandle = $handle;
         }
 
-        $this.on('mousedown', '.touch-handle', function (ev) {
+        $this.on('mousedown touchstart', '.touch-handle', function (ev) {
             onMouseDown(ev, $(ev.target));
             return false;
         }).on('mousedown', function (ev) {
@@ -130,7 +137,7 @@
             return false;
         });
 
-        $(document).bind('mousemove', function (mouseEvent) {
+        $(document).on('mousemove touchmove', function (mouseEvent) {
             if (mouseDown) {
                 dragMove(mouseEvent);
 
@@ -143,7 +150,7 @@
                 return false;
             }
             return true;
-        }).bind('mouseup', function () {
+        }).on('mouseup touchend', function () {
             if (mouseDown) {
                 mouseDown = false;
                 return false;
@@ -151,7 +158,7 @@
             return true;
         });
 
-        $this.on('click', '.touch-handle .touch', function (mouseEvent) {
+        $this.on('click touchstart', '.touch-handle .touch', function (mouseEvent) {
             var $lnk = $(mouseEvent.target);
             var $handle = $lnk.closest('.touch-handle');
 
@@ -160,6 +167,8 @@
             } else {
                 touchHandle($handle);
             }
+
+            return false;
         });
 
         return {
