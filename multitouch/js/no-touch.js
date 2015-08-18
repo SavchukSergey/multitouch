@@ -31,7 +31,7 @@
 
         function createTouch($handle) {
             var key = $handle.attr('id');
-            var pos = $handle.position();
+            var pos = $handle.offset();
             return {
                 identifier: key,
                 pageX: pos.left,

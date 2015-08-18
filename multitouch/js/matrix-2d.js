@@ -135,6 +135,27 @@
         return res;
     }
 
+    function explain() {
+        var res = '';
+        var matrix = self;
+        var dx = m[6];
+        var dy = m[7];
+        if (dx !== 0 && dy !== 0) {
+            res += ' translate(' + roundFloat(dx) + ', ' + roundFloat(dy) + ')';
+            matrix = matrix.translate(-dx, -dy);
+        }
+
+        var det = Math.sqrt(matrix.determinant());
+        if (det !== 1) {
+            det = det !== 0 ? det : 1;
+            matrix = matrix.scale(1 / det, 1 / det);
+            res += ' scale(' + roundFloat(det) + ', ' + roundFloat(det) + ')';
+        }
+
+        res += ' ' + matrix.getTransformExpression();
+        return res;
+    }
+
     self.getElements = getElements;
     self.getTransformExpression = getTransformExpression;
     self.transformVector = transformVector;
@@ -145,5 +166,6 @@
     self.rotate = rotate;
     self.multiply = multiply;
     self.determinant = determinant;
+    self.explain = explain;
 }
 

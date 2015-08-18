@@ -35,7 +35,10 @@
         var m = getResultMatrix();
         $img.css('transform', m.getTransformExpression());
         $('#transform-info').text(m.getTransformExpression());
+        $('#transform-info-explain').text(m.explain());
     }
+
+    refresh();
 
     function processTouches(touches) {
         if (!$canvas) return;
@@ -58,6 +61,18 @@
         $canvas = $(ev.target).closest('.canvas');
 
         var touches = ev.originalEvent.touches;
+        if (!$canvas.hasClass('touch-emulation')) {
+            var t = touches;
+            touches = [];
+            touches.push({
+                identifier: 'stub',
+                pageX: 170,
+                pageY: 700
+            });
+            for (var i = 0; i < t.length; i++) {
+                touches.push(t[i]);
+            }
+        }
         processTouches(touches || []);
 
         ev.preventDefault();

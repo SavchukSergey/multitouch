@@ -16,7 +16,7 @@
         return {
             x: touch.pageX,
             y: touch.pageY,
-            identifier: touch.identifier
+            identifier: touch.identifier.toString()
         }
     }
 
@@ -45,7 +45,7 @@
         };
         if (items.length > 0) {
             cs.position = items[0];
-            hash += items[0].identifier.toString() + ' ';
+            hash += items[0].identifier + ' ';
         }
         if (items.length > 1) {
             var b = items[1];
@@ -55,12 +55,12 @@
                 cs.u = { x: uLen, y: 0, identifier: b.identifier };
             }
             cs.v = { x: cs.u.y, y: -cs.u.x, identifier: null };
-            hash += items[1].identifier.toString() + ' ';
+            hash += b.identifier + ' ';
         }
         if (options.skew && items.length > 2) {
             var c = items[2];
             cs.v = { x: c.x - cs.position.x, y: c.y - cs.position.y, identifier: c.identifier };
-            hash += items[2].identifier.toString() + ' ';
+            hash += c.identifier + ' ';
         }
         if (!options.scale) {
             cs.u = normalizeVector(cs.u);

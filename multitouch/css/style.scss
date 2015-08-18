@@ -1,11 +1,17 @@
 ﻿@mixin transform-origin($top, $left) {
-    transform-origin: $top $left;
     -webkit-transform-origin: $top $left;
+    -moz-transform-origin: $top $left;
+    -o-transform-origin: $top $left;
+    -ms-transform-origin: $top $left;
+    transform-origin: $top $left;
 }
 
 @mixin user-select ($value) {
-    user-select: $value;
     -webkit-user-select: $value;
+    -moz-user-select: $value;
+    -o-user-select: $value;
+    -ms-user-select: $value;
+    user-select: $value;
 }
 
 .canvas {
@@ -20,7 +26,7 @@
 img {
     width: 100%;
     height: 100%;
-    @include transform-origin(0%, 0);
+    @include transform-origin(0, 0);
 }
 
 .canvas {
