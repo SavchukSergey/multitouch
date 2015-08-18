@@ -39,11 +39,12 @@
             };
         }
 
-        function triggerTouch($handle, touchEventName) {
+        function triggerEvent($handle, touchEventName) {
             var touchEvent = $.Event(touchEventName);
             touchEvent.originalEvent = {
                 touches: getTouchList()
             };
+            touchEvent.emulation = true;
             $handle.trigger(touchEvent);
         }
 
@@ -52,7 +53,7 @@
                 var key = $handle.attr('id');
                 $handle.removeClass('touched');
                 delete touches[key];
-                triggerTouch($handle, 'touchend');
+                triggerEvent($handle, 'touchend');
             }
         }
 
@@ -61,7 +62,7 @@
                 var key = $handle.attr('id');
                 $handle.addClass('touched');
                 touches[key] = createTouch($handle);
-                triggerTouch($handle, 'mousestart');
+                triggerEvent($handle, 'touchstart');
             }
         }
 
@@ -118,11 +119,27 @@
             $draggingHandle = $handle;
         }
 
+        function enabled() {
+            return $this.hasClass('touch-emulation');
+        }
+
+        $this.on('touchstart touchmove touchend touchcancel', function (ev) {
+            if (enabled()) {
+                if (!ev.emulation) {
+                    ev.stopPropagation();
+                }
+            }
+        });
+
         $this.on('mousedown touchstart', '.touch-handle', function (ev) {
+            if (!enabled()) return true;
+            if (ev.emulation) return true;
             onMouseDown(ev, $(ev.target));
             return false;
-        }).on('mousedown', function (ev) {
-            $this.find('.touch-handle.touched').each(function() {
+        }).on('mousedown touchstart', function (ev) {
+            if (!enabled()) return true;
+            if (ev.emulation) return true;
+            $this.find('.touch-handle.touched').each(function () {
                 untouchHandle($(this));
             });
             var $handle = $this.find('.touch-handle').eq(0);
@@ -135,22 +152,24 @@
             touchHandle($handle);
             onMouseDown(ev, $handle);
             return false;
-        });
-
-        $(document).on('mousemove touchmove', function (mouseEvent) {
+        }).on('mousemove touchmove', function (ev) {
+            if (!enabled()) return true;
+            if (ev.emulation) return true;
             if (mouseDown) {
-                dragMove(mouseEvent);
+                dragMove(ev);
 
                 var key = $draggingHandle.attr('id');
                 if (touches[key]) {
                     touches[key] = createTouch($draggingHandle);
 
-                    triggerTouch($draggingHandle, 'touchmove');
+                    triggerEvent($draggingHandle, 'touchmove');
                 }
                 return false;
             }
             return true;
-        }).on('mouseup touchend', function () {
+        }).on('mouseup touchend', function (ev) {
+            if (!enabled()) return true;
+            if (ev.emulation) return true;
             if (mouseDown) {
                 mouseDown = false;
                 return false;
@@ -158,8 +177,8 @@
             return true;
         });
 
-        $this.on('click touchstart', '.touch-handle .touch', function (mouseEvent) {
-            var $lnk = $(mouseEvent.target);
+        $this.on('click touchstart', '.touch-handle .touch', function (ev) {
+            var $lnk = $(ev.target);
             var $handle = $lnk.closest('.touch-handle');
 
             if ($handle.hasClass('touched')) {

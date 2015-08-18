@@ -1,12 +1,14 @@
 ﻿$(document).ready(function () {
 
-    $('.canvas').noTouch();
+    var $canvas = $('.canvas');
+    var $img = $('.canvas img');
+    var $chkTouchEmulation = $('#touch-emulation');
+
+    $canvas.noTouch();
 
     var originalTransformation = new Matrix2D();
 
     var multitouch;
-    var $img = $('.canvas img');
-    var $editor = null;
 
     function getResultMatrix() {
         var m = originalTransformation;
@@ -23,14 +25,14 @@
     }
 
     function processTouches(touches) {
-        if (!$editor) return;
+        if (!$canvas) return;
         if (!multitouch) {
             multitouch = new MultiTouch();
         }
         multitouch.acceptTouches(touches);
         refresh();
 
-        $editor.toggleClass('dragging', !!touches.length);
+        $canvas.toggleClass('dragging', !!touches.length);
 
         if (!touches.length) {
             originalTransformation = getResultMatrix();
@@ -39,12 +41,47 @@
         }
     }
 
-    $(document).on('touchstart touchmove touchend touchcancel', '.canvas', function (ev) {
-        $editor = $(ev.target).closest('.canvas');
+    var dragging = false;
+
+    function process(ev) {
+        $canvas = $(ev.target).closest('.canvas');
 
         var touches = ev.originalEvent.touches;
         processTouches(touches || []);
         return false;
-    });
+    }
 
+    function processStart(ev) {
+        console.log('processstart');
+        return process(ev);
+        dragging = true;
+        return process(ev);
+    }
+
+    function processEnd(ev) {
+        console.log('processend');
+        return process(ev);
+        if (dragging) {
+            dragging = false;
+            return process(ev);
+        }
+        return true;
+    }
+
+    function processMove(ev) {
+        console.log('processmove ' + dragging);
+        return process(ev);
+        if (dragging) {
+            return process(ev);
+        }
+        return true;
+    }
+
+    $(document).on('touchstart', '.canvas', processStart);
+    $(document).on('touchmove', '.canvas', processMove);
+    $(document).on('touchend touchcancel', '.canvas', processEnd);
+
+    $('#touch-emulation').change(function () {
+        $canvas.toggleClass('touch-emulation', $chkTouchEmulation);
+    });
 });

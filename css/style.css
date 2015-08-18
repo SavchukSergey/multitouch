@@ -13,6 +13,12 @@ img {
   transform-origin: 0% 0;
   -webkit-transform-origin: 0% 0; }
 
+.canvas .touch-handle {
+  display: none; }
+
+.canvas.touch-emulation .touch-handle {
+  display: block; }
+
 .canvas #handle-0 {
   top: 50%;
   left: 50%; }

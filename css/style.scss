@@ -24,6 +24,16 @@ img {
 }
 
 .canvas {
+    .touch-handle {
+        display: none;
+    }
+
+    &.touch-emulation .touch-handle {
+        display: block;
+    }
+}
+
+.canvas {
     #handle-0 {
         top: 50%;
         left: 50%;
