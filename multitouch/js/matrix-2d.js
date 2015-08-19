@@ -140,16 +140,26 @@
         var matrix = self;
         var dx = m[6];
         var dy = m[7];
-        if (dx !== 0 && dy !== 0) {
-            res += ' translate(' + roundFloat(dx) + ', ' + roundFloat(dy) + ')';
+        if (dx !== 0 || dy !== 0) {
+            res += ' translate(' + roundFloat(dx) + 'px, ' + roundFloat(dy) + 'px)';
             matrix = matrix.translate(-dx, -dy);
         }
 
-        var det = Math.sqrt(matrix.determinant());
-        if (det !== 1) {
-            det = det !== 0 ? det : 1;
-            matrix = matrix.scale(1 / det, 1 / det);
-            res += ' scale(' + roundFloat(det) + ', ' + roundFloat(det) + ')';
+        var sx = m[0] * m[0] + m[1] * m[1];
+        var sy = m[3] * m[3] + m[4] * m[4];
+
+        if (sx !== 1 || sy !== 1) {
+            sx = sx || 1;
+            sy = sy || 1;
+            matrix = matrix.scale(1 / sx, 1 / sy);
+            res += ' scale(' + roundFloat(sx) + ', ' + roundFloat(sy) + ')';
+        }
+
+        var ca = m[0] * m[3] + m[1] * m[4];
+        var angle = Math.acos(ca) * 180 / Math.PI;
+        var skewAngle = 90 - angle;
+        if (skewAngle) {
+            res += ' skew(' + roundFloat(skewAngle) + 'deg)';
         }
 
         res += ' ' + matrix.getTransformExpression();
