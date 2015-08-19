@@ -31,8 +31,21 @@
         };
     }
 
+    function getTargetOffset() {
+        var obj = $img.parent()[0].getBoundingClientRect();
+        return {
+            left: obj.left + document.body.scrollLeft,
+            top: obj.top + document.body.scrollTop,
+            width: obj.width,
+            height: obj.height
+        };
+    }
+
     function refresh() {
-        var m = getResultMatrix();
+        var offset = getTargetOffset();
+        var transformOrigin = new Matrix2D().translate(offset.left, offset.top);
+        var transformOriginReverse = transformOrigin.reverse();
+        var m = transformOrigin.multiply(getResultMatrix()).multiply(transformOriginReverse);
         $img.css('transform', m.getTransformExpression());
         $('#transform-info').text(m.getTransformExpression());
         $('#transform-info-explain').text(m.explain());
