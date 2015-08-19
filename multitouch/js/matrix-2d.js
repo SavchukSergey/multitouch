@@ -135,34 +135,74 @@
         return res;
     }
 
+    function getUAngle(els) {
+        var ulen2 = els[0] * els[0] + els[1] * els[1];
+        var cos = els[0] / Math.sqrt(ulen2);
+        var sin = els[1] / Math.sqrt(ulen2);
+        var angle = Math.acos(cos);
+        if (sin < 0) angle = 2 * Math.PI - angle;
+        if (angle < 0) angle += 2 * Math.PI;
+        return angle;
+    }
+
+    function getAxesAngle(els) {
+        var ulen = Math.sqrt(els[0] * els[0] + els[1] * els[1]);
+        var vlen = Math.sqrt(els[3] * els[3] + els[4] * els[4]);
+        var scalar = (els[0] * els[3] + els[1] * els[4]) / ulen / vlen;
+        return Math.acos(scalar);
+    }
+
+    function isIdentityRound(els) {
+        if (roundFloat(els[0]) !== 1) return false;
+        if (roundFloat(els[1]) !== 0) return false;
+        if (roundFloat(els[2]) !== 0) return false;
+        if (roundFloat(els[3]) !== 0) return false;
+        if (roundFloat(els[4]) !== 1) return false;
+        if (roundFloat(els[5]) !== 0) return false;
+        if (roundFloat(els[6]) !== 0) return false;
+        if (roundFloat(els[7]) !== 0) return false;
+        if (roundFloat(els[8]) !== 1) return false;
+        return true;
+    }
+
     function explain() {
         var res = '';
         var matrix = self;
-        var dx = m[6];
-        var dy = m[7];
+        var dx = roundFloat(m[6]);
+        var dy = roundFloat(m[7]);
         if (dx !== 0 || dy !== 0) {
-            res += ' translate(' + roundFloat(dx) + 'px, ' + roundFloat(dy) + 'px)';
+            res += ' translate(' + dx + 'px, ' + dy + 'px)';
             matrix = matrix.translate(-dx, -dy);
         }
 
-        var sx = m[0] * m[0] + m[1] * m[1];
-        var sy = m[3] * m[3] + m[4] * m[4];
-
+        var sx = roundFloat(Math.sqrt(m[0] * m[0] + m[1] * m[1]));
+        var sy = roundFloat(Math.sqrt(m[3] * m[3] + m[4] * m[4]));
         if (sx !== 1 || sy !== 1) {
             sx = sx || 1;
             sy = sy || 1;
             matrix = matrix.scale(1 / sx, 1 / sy);
-            res += ' scale(' + roundFloat(sx) + ', ' + roundFloat(sy) + ')';
+            res += ' scale(' + sx + ', ' + sy + ')';
         }
 
-        var ca = m[0] * m[3] + m[1] * m[4];
-        var angle = Math.acos(ca) * 180 / Math.PI;
-        var skewAngle = 90 - angle;
+        var skewAngle = 90 - getAxesAngle(matrix.getElements()) * 180 / Math.PI;
         if (skewAngle) {
             res += ' skew(' + roundFloat(skewAngle) + 'deg)';
+            //todo: reverse matrix
         }
 
-        res += ' ' + matrix.getTransformExpression();
+        var angle = getUAngle(matrix.getElements()) * 180 / Math.PI;
+        if (angle) {
+            res += ' rotate(' + roundFloat(angle) + 'deg)';
+            var rotateMatrix = new Matrix2D().rotate(-angle);
+            matrix = matrix.multiply(rotateMatrix);
+        }
+
+        if (!isIdentityRound(matrix.getElements())) {
+            res += ' ' + matrix.getTransformExpression();
+        }
+
+        if (!res) res = 'none';
+
         return res;
     }
 
