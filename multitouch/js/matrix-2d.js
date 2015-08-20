@@ -203,7 +203,7 @@
 
         if (!res) res = 'none';
 
-        return res;
+        return res.trim();
     }
 
     self.getElements = getElements;

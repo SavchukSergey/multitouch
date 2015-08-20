@@ -72,22 +72,8 @@
 
     function process(ev) {
         $canvas = $(ev.target).closest('.canvas');
-
         var touches = ev.originalEvent.touches;
-        if (!$canvas.hasClass('touch-emulation')) {
-            var t = touches;
-            touches = [];
-            touches.push({
-                identifier: 'stub',
-                pageX: 170,
-                pageY: 700
-            });
-            for (var i = 0; i < t.length; i++) {
-                touches.push(t[i]);
-            }
-        }
         processTouches(touches || []);
-
         ev.preventDefault();
     }
 

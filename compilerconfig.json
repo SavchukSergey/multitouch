@@ -1,0 +1,9 @@
+﻿[
+  {
+    "outputFile": "multitouch/css/style.css",
+    "inputFile": "multitouch/css/style.scss",
+    "minify": {
+      "enabled": false
+    }
+  }
+]

@@ -14,11 +14,35 @@
     user-select: $value;
 }
 
+.demo {
+    .canvas, .options {
+        float: left;
+        height: 50%;
+        padding: 1em;
+    }
+
+
+    &:after {
+        content: " ";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+}
+
+.options {
+    width: 33.33%;
+
+    label {
+        display: block;
+    }
+}
+
 .canvas {
     position: relative;
     border: solid 1px red;
-    width: 500px;
-    height: 500px;
+    width: 66.66%;
     @include user-select(none);
     overflow: hidden;
 }
